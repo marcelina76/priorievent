@@ -1,45 +1,75 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PrioriEvent</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: white;
+      font-family: Arial, sans-serif;
+      color: #888888;
+      text-align: center;
+    }
+
+    p {
+      font-size: 16px;
+      padding: 20px;
+    }
+
+    a {
+      color: #888888;
+    }
+  </style>
 </head>
-<body style="font-family:Arial;text-align:center;padding:60px;background:#fbf4f8;color:#493744">
 
-  <h1>Open PrioriEvent 💗</h1>
-  <p id="message">Preparing your calendar...</p>
-
-  <a id="open"
-     style="background:#b65d8c;color:white;padding:16px 24px;border-radius:12px;text-decoration:none">
-     Open Calendar
-  </a>
+<body>
+  <div>
+    <p id="message">Otwieranie kalendarza...</p>
+    <a id="open" href="#" style="display:none">
+      Otwórz kalendarz
+    </a>
+  </div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const date = params.get("date") || "2026-11-29";
+    const date = params.get("date");
 
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) ||
-        new Date(date + "T12:00:00Z").toISOString().slice(0,10) !== date) {
-      document.getElementById("message").textContent = "Invalid date!";
-      document.getElementById("open").style.display = "none";
-      throw new Error("Invalid date");
-    }
-
-    const shortcutURL =
-      "shortcuts://run-shortcut?name=PrioriEvent&input=text&text=" +
-      encodeURIComponent("D " + date);
-
-    document.getElementById("message").textContent =
-      "Opening " + date + "...";
-
+    const message = document.getElementById("message");
     const button = document.getElementById("open");
-    button.href = shortcutURL;
 
-    setTimeout(() => {
-      window.location.href = shortcutURL;
-    }, 500);
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      message.textContent = "Nieprawidłowa data.";
+    } else {
+      const parsed = new Date(date + "T12:00:00Z");
+
+      if (parsed.toISOString().slice(0, 10) !== date) {
+        message.textContent = "Nieprawidłowa data.";
+      } else {
+        const [year, month, day] = date.split("-");
+
+        message.textContent =
+          `Otwieranie kalendarza dla daty: ${day}.${month}.${year}`;
+
+        const shortcutURL =
+          "shortcuts://run-shortcut?name=PrioriEvent&input=text&text=" +
+          encodeURIComponent("D " + date);
+
+        button.href = shortcutURL;
+        button.style.display = "inline";
+
+        setTimeout(() => {
+          window.location.href = shortcutURL;
+        }, 500);
+      }
+    }
   </script>
-
 </body>
 </html>
