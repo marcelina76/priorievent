@@ -6,19 +6,40 @@
   <title>PrioriEvent</title>
 </head>
 <body style="font-family:Arial;text-align:center;padding:60px;background:#fbf4f8;color:#493744">
-  <h1>Open PrioriEvent 💗</h1>
-  <p>Opening November 29, 2026...</p>
 
-  <a href="shortcuts://run-shortcut?name=PrioriEvent&input=text&text=D%202026-11-29"
+  <h1>Open PrioriEvent 💗</h1>
+  <p id="message">Preparing your calendar...</p>
+
+  <a id="open"
      style="background:#b65d8c;color:white;padding:16px 24px;border-radius:12px;text-decoration:none">
      Open Calendar
   </a>
 
   <script>
-    setTimeout(function() {
-      window.location.href =
-      "shortcuts://run-shortcut?name=PrioriEvent&input=text&text=D%202026-11-29";
+    const params = new URLSearchParams(window.location.search);
+    const date = params.get("date") || "2026-11-29";
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+        new Date(date + "T12:00:00Z").toISOString().slice(0,10) !== date) {
+      document.getElementById("message").textContent = "Invalid date!";
+      document.getElementById("open").style.display = "none";
+      throw new Error("Invalid date");
+    }
+
+    const shortcutURL =
+      "shortcuts://run-shortcut?name=PrioriEvent&input=text&text=" +
+      encodeURIComponent("D " + date);
+
+    document.getElementById("message").textContent =
+      "Opening " + date + "...";
+
+    const button = document.getElementById("open");
+    button.href = shortcutURL;
+
+    setTimeout(() => {
+      window.location.href = shortcutURL;
     }, 500);
   </script>
+
 </body>
 </html>
